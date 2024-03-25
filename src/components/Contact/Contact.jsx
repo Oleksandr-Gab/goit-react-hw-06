@@ -1,19 +1,25 @@
-import { BsFillTelephoneFill } from "react-icons/bs";
-import { FaUser } from "react-icons/fa";
 import css from "./Contact.module.css";
+import { IoPerson } from "react-icons/io5";
+import { FaPhoneAlt } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { deleteContact } from "../../redux/contactsSlice.js";
 
-export default function Contact({ contact: { id, name, number }, onDelete }) {
+export default function Contact({ contact }) {
+    const dispatch = useDispatch();
     return (
         <div className={css.container}>
             <div>
+                <h4>
+                    <IoPerson /> {contact.name}
+                </h4>
                 <p>
-                    <FaUser /> {name}
-                </p>
-                <p>
-                    <BsFillTelephoneFill /> {number}
+                    <FaPhoneAlt /> {contact.number}
                 </p>
             </div>
-            <button type="button" onClick={() => onDelete(id)}>
+            <button
+                onClick={() => dispatch(deleteContact(contact.id))}
+                type="button"
+            >
                 Delete
             </button>
         </div>

@@ -1,58 +1,56 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { useId } from "react";
+import { useDispatch } from "react-redux";
+
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { nanoid } from "nanoid";
+
+import { addContact } from "../../redux/contactsSlice";
 
 import css from "./ContactForm.module.css";
 
-const ContactSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(3, "Too short!")
-        .max(50, "Too long")
-        .required("This is required you dummy"),
-    number: Yup.string()
-        .min(3, "Too short!")
-        .max(50, "Too long")
-        .required("This is required you dummy"),
-});
+export default function ContactForm() {
+    const nameFieldId = useId();
+    const numberFieldId = useId();
+    const dispatch = useDispatch();
 
-export default function ContactForm({ onAddContact }) {
+    const initialValues = {
+        name: "",
+        number: "",
+    };
+    const validationSchema = Yup.object().shape({
+        name: Yup.string()
+            .min(3, "Too Short name")
+            .max(50, "Too Long name!")
+            .required("Name is required!"),
+        number: Yup.string()
+            .min(3, "Too Short number!")
+            .max(50, "Too Long number!")
+            .required("Number is required!"),
+    });
+
+    const handleSubmit = (values, actions) => {
+        dispatch(
+            addContact({
+                name: values.name,
+                number: values.number,
+            })
+        );
+        actions.resetForm();
+    };
+
     return (
         <Formik
-            initialValues={{
-                name: "",
-                number: "",
-            }}
-            validationSchema={ContactSchema}
-            onSubmit={(values, actions) => {
-                onAddContact({
-                    id: nanoid(),
-                    name: values.name,
-                    number: values.number,
-                });
-                actions.resetForm();
-            }}
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            validationSchema={validationSchema}
         >
             <Form className={css.form}>
-                <div>
-                    <label htmlFor="351351351">Name</label>
-                    <Field
-                        className={css.input}
-                        name="name"
-                        type="text"
-                        id="351351351"
-                    />
-                    <ErrorMessage name="name" component={"span"} />
-                </div>
-                <div>
-                    <label htmlFor="3515631631">Number</label>
-                    <Field
-                        className={css.input}
-                        name="number"
-                        type="tel"
-                        id="3515631631"
-                    />
-                    <ErrorMessage name="number" component={"span"} />
-                </div>
+                <label htmlFor={nameFieldId}>Name</label>
+                <Field type="text" name="name" id={nameFieldId} />
+                <ErrorMessage name="name" component={"span"} />
+                <label htmlFor={numberFieldId}>Number</label>
+                <Field type="text" name="number" id={numberFieldId} />
+                <ErrorMessage name="number" component={"span"} />
                 <button className={css.btn} type="submit">
                     Add contact
                 </button>
